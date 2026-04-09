@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using SkiaSharp;

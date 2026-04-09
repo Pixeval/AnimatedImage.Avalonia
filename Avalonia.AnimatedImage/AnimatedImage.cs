@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Metadata;
@@ -9,8 +13,8 @@ namespace Avalonia.AnimatedImage;
 public class AnimatedImage : Control
 {
     private CompositionCustomVisual? _customVisual;
-
     private CancellationTokenSource? _cancellationTokenSource;
+    private int _visualTreeVersion;
 
     public static readonly StyledProperty<IAnimatedBitmap?> SourceProperty = AvaloniaProperty.Register<AnimatedImage, IAnimatedBitmap?>(nameof(Source), defaultValue: null);
 
@@ -69,13 +73,19 @@ public class AnimatedImage : Control
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        _ = EnsureCustomVisualStateAsync();
+        var version = Interlocked.Increment(ref _visualTreeVersion);
+        _ = EnsureCustomVisualStateAsync(version);
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        _ = Interlocked.Increment(ref _visualTreeVersion);
+
         _customVisual?.SendHandlerMessage(CustomVisualHandler.StopMessage);
+
         ElementComposition.SetElementChildVisual(this, null);
+        _customVisual = null;
+
         base.OnDetachedFromVisualTree(e);
     }
 
@@ -124,17 +134,17 @@ public class AnimatedImage : Control
         _customVisual.Offset = Vector3.Zero;
     }
 
-    private async Task EnsureCustomVisualStateAsync()
+    private async Task EnsureCustomVisualStateAsync(int version)
     {
         var compositor = ElementComposition.GetElementVisual(this)?.Compositor;
-        if (compositor is null)
+        if (compositor is null || version != _visualTreeVersion)
             return;
 
-        if (_customVisual is null || _customVisual.Compositor != compositor)
-            _customVisual = compositor.CreateCustomVisual(new CustomVisualHandler());
-
-        ElementComposition.SetElementChildVisual(this, _customVisual);
-        _customVisual.SendHandlerMessage(CustomVisualHandler.StartMessage);
+        // 不复用旧实例，避免“旧父级未解绑 + 新父级绑定”冲突
+        var customVisual = compositor.CreateCustomVisual(new CustomVisualHandler());
+        _customVisual = customVisual;
+        ElementComposition.SetElementChildVisual(this, customVisual);
+        customVisual.SendHandlerMessage(CustomVisualHandler.StartMessage);
 
         if (Source is { IsInitialized: false, IsFailed: false } source)
             await InitSourceAsync(source);
