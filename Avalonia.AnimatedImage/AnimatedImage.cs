@@ -37,6 +37,12 @@ public class AnimatedImage : Control
         set => SetValue(StretchProperty, value);
     }
 
+    static AnimatedImage()
+    {
+        AffectsMeasure<AnimatedImage>(SourceProperty, StretchProperty, StretchDirectionProperty);
+        AffectsArrange<AnimatedImage>(SourceProperty, StretchProperty, StretchDirectionProperty);
+    }
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         switch (change.Property.Name)
@@ -45,14 +51,10 @@ public class AnimatedImage : Control
                 OnSourcePropertyChanged(change.NewValue as IAnimatedBitmap);
                 break;
             case nameof(Stretch):
-                InvalidateArrange();
-                InvalidateMeasure();
                 _customVisual?.SendHandlerMessage(Stretch);
                 Update();
                 break;
             case nameof(StretchDirection):
-                InvalidateArrange();
-                InvalidateMeasure();
                 _customVisual?.SendHandlerMessage(StretchDirection);
                 Update();
                 break;
@@ -64,23 +66,17 @@ public class AnimatedImage : Control
         base.OnPropertyChanged(change);
     }
     
-    protected override async void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        var compositor = ElementComposition.GetElementVisual(this)?.Compositor;
-        if (compositor is null || _customVisual?.Compositor == compositor)
-            return;
-        _customVisual = compositor.CreateCustomVisual(new CustomVisualHandler());
-        ElementComposition.SetElementChildVisual(this, _customVisual);
-        _customVisual.SendHandlerMessage(CustomVisualHandler.StartMessage);
-        
-        if (Source is { IsInitialized: false, IsFailed: false } source)
-            await InitSourceAsync(source);
-        _customVisual.SendHandlerMessage(Stretch);
-        _customVisual.SendHandlerMessage(StretchDirection);
-        if (Source is { IsInitialized: true })
-            _customVisual.SendHandlerMessage(Source);
-        Update();
         base.OnAttachedToVisualTree(e);
+        _ = EnsureCustomVisualStateAsync();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        _customVisual?.SendHandlerMessage(CustomVisualHandler.StopMessage);
+        ElementComposition.SetElementChildVisual(this, null);
+        base.OnDetachedFromVisualTree(e);
     }
 
     /// <inheritdoc/>
@@ -126,6 +122,31 @@ public class AnimatedImage : Control
         
         _customVisual.Size = new Vector2((float) Bounds.Width, (float) Bounds.Height);
         _customVisual.Offset = Vector3.Zero;
+    }
+
+    private async Task EnsureCustomVisualStateAsync()
+    {
+        var compositor = ElementComposition.GetElementVisual(this)?.Compositor;
+        if (compositor is null)
+            return;
+
+        if (_customVisual is null || _customVisual.Compositor != compositor)
+            _customVisual = compositor.CreateCustomVisual(new CustomVisualHandler());
+
+        ElementComposition.SetElementChildVisual(this, _customVisual);
+        _customVisual.SendHandlerMessage(CustomVisualHandler.StartMessage);
+
+        if (Source is { IsInitialized: false, IsFailed: false } source)
+            await InitSourceAsync(source);
+
+        _customVisual.SendHandlerMessage(Stretch);
+        _customVisual.SendHandlerMessage(StretchDirection);
+        if (Source is { IsInitialized: true })
+            _customVisual.SendHandlerMessage(Source);
+
+        InvalidateArrange();
+        InvalidateMeasure();
+        Update();
     }
 
     private async Task InitSourceAsync(IAnimatedBitmap source)
@@ -207,6 +228,8 @@ public class AnimatedImage : Control
                         _totalTime += delay;
                     }
 
+                    Invalidate();
+
                     break;
                 }
             }
@@ -240,9 +263,15 @@ public class AnimatedImage : Control
             if (_currentInstance is not { IsInitialized: true })
                 return;
 
-            var ms = (int) _animationElapsed.TotalMilliseconds % _totalTime;
-            var i = _frameTimes.BinarySearch(ms);
-            var bitmap = _currentInstance.Frames[i < 0 ? ~i - 1 : i];
+            var i = 0;
+            if (_totalTime > 0)
+            {
+                var ms = (int) _animationElapsed.TotalMilliseconds % _totalTime;
+                i = _frameTimes.BinarySearch(ms);
+                i = i < 0 ? ~i - 1 : i;
+            }
+
+            var bitmap = _currentInstance.Frames[i];
 
             var viewPort = GetRenderBounds();
             var bounds = viewPort.Size;
