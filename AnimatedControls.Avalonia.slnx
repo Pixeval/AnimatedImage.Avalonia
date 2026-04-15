@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="AnimatedControls.Avalonia.Sample/AnimatedControls.Avalonia.Sample.csproj" />
+  <Project Path="AnimatedControls.Avalonia/AnimatedControls.Avalonia.csproj" />
+</Solution>

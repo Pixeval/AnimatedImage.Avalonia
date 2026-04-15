@@ -21,6 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Avalonia.AnimatedImage\Avalonia.AnimatedImage.csproj" />
+    <ProjectReference Include="..\AnimatedControls.Avalonia\AnimatedControls.Avalonia.csproj" />
   </ItemGroup>
 </Project>

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Avalonia;
 using Avalonia.Media.Imaging;
 
-namespace Avalonia.AnimatedImage;
+namespace AnimatedControls.Avalonia;
 
 internal class AnimatedBitmapSimpleImpl : IAnimatedBitmap
 {

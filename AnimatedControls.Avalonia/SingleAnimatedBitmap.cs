@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using SkiaSharp;
 
-namespace Avalonia.AnimatedImage;
+namespace AnimatedControls.Avalonia;
 
 internal class SingleAnimatedBitmap(Stream stream, bool disposeStream) : IAnimatedBitmap
 {

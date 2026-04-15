@@ -1,7 +1,8 @@
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-namespace Avalonia.AnimatedImage.Sample;
+namespace AnimatedControls.Avalonia.Sample;
 
 public partial class App : Application
 {

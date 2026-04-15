@@ -5,7 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 
-namespace Avalonia.AnimatedImage.Sample;
+namespace AnimatedControls.Avalonia.Sample;
 
 public partial class MainWindow : Window
 {

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Metadata;
 using Avalonia.Rendering.Composition;
 
-namespace Avalonia.AnimatedImage;
+namespace AnimatedControls.Avalonia;
 
 public class AnimatedImage : Control
 {

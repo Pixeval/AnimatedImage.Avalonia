@@ -1,6 +1,6 @@
 using System;
 
-namespace Avalonia.AnimatedImage;
+namespace AnimatedControls.Avalonia;
 
 public class AnimatedBitmapFailedEventArgs(Exception exception) : EventArgs
 {

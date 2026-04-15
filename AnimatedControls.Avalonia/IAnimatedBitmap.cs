@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Avalonia;
 using Avalonia.Media.Imaging;
 
-namespace Avalonia.AnimatedImage;
+namespace AnimatedControls.Avalonia;
 
 public interface IAnimatedBitmap : IDisposable
 {

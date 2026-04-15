@@ -1,12 +1,12 @@
 <Window
-    x:Class="Avalonia.AnimatedImage.Sample.MainWindow"
+    x:Class="AnimatedControls.Avalonia.Sample.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ai="clr-namespace:Avalonia.AnimatedImage;assembly=Avalonia.AnimatedImage"
+    xmlns:ai="clr-namespace:AnimatedControls.Avalonia;assembly=AnimatedControls.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:sample="clr-namespace:Avalonia.AnimatedImage.Sample"
-    Title="Avalonia.AnimatedImage.Sample"
+    xmlns:sample="clr-namespace:AnimatedControls.Avalonia.Sample"
+    Title="AnimatedControls.Avalonia.Sample"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">

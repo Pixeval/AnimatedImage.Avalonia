@@ -1,4 +1,4 @@
-# Avalonia.AnimatedImage
+# AnimatedControls.Avalonia
 
 AnimatedImage control for [Avalonia](https://github.com/AvaloniaUI/Avalonia). Using SKCodec as the image decoder.
 

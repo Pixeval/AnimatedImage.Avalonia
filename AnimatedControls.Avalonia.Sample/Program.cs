@@ -1,6 +1,7 @@
 using System;
+using Avalonia;
 
-namespace Avalonia.AnimatedImage.Sample;
+namespace AnimatedControls.Avalonia.Sample;
 
 internal class Program
 {
